@@ -62,7 +62,7 @@ class RemoteUserMiddleware(MiddlewareMixin):
             raise ImproperlyConfigured(
                 "The Django remote user auth middleware requires the"
                 " authentication middleware to be installed.  Edit your"
-                " MIDDLEWARE_CLASSES setting to insert"
+                " MIDDLEWARE setting to insert"
                 " 'django.contrib.auth.middleware.AuthenticationMiddleware'"
                 " before the RemoteUserMiddleware class.")
         try:

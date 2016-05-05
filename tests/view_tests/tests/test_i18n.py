@@ -123,7 +123,7 @@ class I18NTests(TestCase):
         # we force saving language to a cookie rather than a session
         # by excluding session middleware and those which do require it
         test_settings = dict(
-            MIDDLEWARE_CLASSES=['django.middleware.common.CommonMiddleware'],
+            MIDDLEWARE=['django.middleware.common.CommonMiddleware'],
             LANGUAGE_COOKIE_NAME='mylanguage',
             LANGUAGE_COOKIE_AGE=3600 * 7 * 2,
             LANGUAGE_COOKIE_DOMAIN='.example.com',
@@ -150,7 +150,7 @@ class I18NTests(TestCase):
         self.assertRedirects(response, encoded_url, fetch_redirect_response=False)
         self.assertEqual(self.client.session[LANGUAGE_SESSION_KEY], lang_code)
 
-    @modify_settings(MIDDLEWARE_CLASSES={
+    @modify_settings(MIDDLEWARE={
         'append': 'django.middleware.locale.LocaleMiddleware',
     })
     def test_lang_from_translated_i18n_pattern(self):

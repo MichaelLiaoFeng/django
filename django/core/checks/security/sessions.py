@@ -89,8 +89,8 @@ def check_session_cookie_httponly(app_configs, **kwargs):
 
 
 def _session_middleware():
-    return ("django.contrib.sessions.middleware.SessionMiddleware" in
-            settings.MIDDLEWARE_CLASSES)
+    return ("django.contrib.sessions.middleware.SessionMiddleware" in settings.MIDDLEWARE_CLASSES or
+            "django.contrib.sessions.middleware.SessionMiddleware" in settings.MIDDLEWARE)
 
 
 def _session_app():

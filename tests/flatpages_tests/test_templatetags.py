@@ -9,7 +9,7 @@ from .settings import FLATPAGES_TEMPLATES
 
 @modify_settings(INSTALLED_APPS={'append': 'django.contrib.flatpages'})
 @override_settings(
-    MIDDLEWARE_CLASSES=[
+    MIDDLEWARE=[
         'django.middleware.common.CommonMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',

@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.conf.urls.i18n import is_language_prefix_patterns_used
 from django.core.handlers.middleware import MiddlewareMixin
-from django.http import HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import get_script_prefix, is_valid_path
 from django.utils import translation
 from django.utils.cache import patch_vary_headers
@@ -18,6 +18,19 @@ class LocaleMiddleware(MiddlewareMixin):
     is available, of course).
     """
     response_redirect_class = HttpResponseRedirect
+
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.process_request(request)
+        if not response:
+            try:
+                response = self.get_response(request)
+            except Http404:
+                # TODO: fix
+                response = HttpResponse(status=404)
+        return self.process_response(request, response)
 
     def process_request(self, request):
         urlconf = getattr(request, 'urlconf', settings.ROOT_URLCONF)

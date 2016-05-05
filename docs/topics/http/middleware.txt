@@ -16,18 +16,92 @@ how to write your own middleware. Django ships with some built-in middleware
 you can use right out of the box. They're documented in the :doc:`built-in
 middleware reference </ref/middleware>`.
 
+Writing your own middleware
+===========================
+
+.. versionchanged:: 1.10
+
+    A new style of middleware was introduced.
+
+A middleware factory can be written as a function that looks like this::
+
+    def simple_middleware(get_response):
+        # one-time configuration and initialization
+
+        def middleware(request):
+            # code to be executed for each request before
+            # the view is called; equivalent to process_request
+
+            try:
+                response = get_response(request)
+            except Exception as e:
+                # code to handle an exception that wasn't caught
+                # further up the chain, if desired. equivalent to
+                # process_exception.
+
+            # code to be executed for each request/response after
+            # the view is called; equivalent to process_response
+
+            return response
+
+        return middleware
+
+Or it can be written as a class with a ``__call__()`` method, like this::
+
+    class SimpleMiddleware(object):
+        def __init__(self, get_response):
+            self.get_response = get_response
+
+            # one-time configuration and initialization
+
+        def __call__(self, request):
+            # code to be executed for each request before
+            # the view is called
+
+            try:
+                response = self. get_response(request)
+            except Exception as e:
+                # code to handle an exception that wasn't caught
+                # further up the chain, if desired. equivalent to
+                # process_exception.
+
+            # code to be executed for each request/response after
+            # the view is called
+
+            return response
+
+In both examples, the ``try``/``except` isn't required if the middleware
+doesn't need to handle any exceptions. If it is included, it should probably
+catch something more specific than ``Exception``. The above just illustrates
+how to implement the generic equivalent of ``process_exception()``.
+
+In prose instead of examples: a middleware factory is a callable that takes a
+``get_response()`` callable and returns a middleware. A middleware is a
+callable that takes a request and returns a response. (Just like a view!)
+
+The ``get_response`` callable provided by Django might be the actual view (if
+this is the last listed middleware) or it might be the next middleware in the
+chain. The current middleware doesn't need to know or care what exactly it is
+-- just that it represents "upstream", and that it also takes a request and
+returns a response.
+
+The above is a slight simplification -- the ``get_response`` callable for the
+last middleware in the chain won't be the actual view, it'll be a wrapper
+method from the handler which takes care of view middleware, calling the view
+with appropriate url args, and template-response middleware.
+
 Activating middleware
 =====================
 
-To activate a middleware component, add it to the
-:setting:`MIDDLEWARE_CLASSES` list in your Django settings.
+To activate a middleware component, add it to the :setting:`MIDDLEWARE` list in
+your Django settings.
 
-In :setting:`MIDDLEWARE_CLASSES`, each middleware component is represented by
-a string: the full Python path to the middleware's class name. For example,
+In :setting:`MIDDLEWARE`, each middleware component is represented by a string:
+the full Python path to the middleware's class or function name. For example,
 here's the default value created by :djadmin:`django-admin startproject
 <startproject>`::
 
-    MIDDLEWARE_CLASSES = [
+    MIDDLEWARE = [
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.common.CommonMiddleware',
@@ -37,13 +111,12 @@ here's the default value created by :djadmin:`django-admin startproject
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
     ]
 
-A Django installation doesn't require any middleware —
-:setting:`MIDDLEWARE_CLASSES` can be empty, if you'd like — but it's strongly
-suggested that you at least use
+A Django installation doesn't require any middleware — :setting:`MIDDLEWARE`
+can be empty, if you'd like — but it's strongly suggested that you at least use
 :class:`~django.middleware.common.CommonMiddleware`.
 
-The order in :setting:`MIDDLEWARE_CLASSES` matters because a middleware can
-depend on other middleware. For instance,
+The order in :setting:`MIDDLEWARE` matters because a middleware can depend on
+other middleware. For instance,
 :class:`~django.contrib.auth.middleware.AuthenticationMiddleware` stores the
 authenticated user in the session; therefore, it must run after
 :class:`~django.contrib.sessions.middleware.SessionMiddleware`. See
@@ -54,14 +127,16 @@ Hooks and application order
 ===========================
 
 During the request phase, before calling the view, Django applies middleware
-in the order it's defined in :setting:`MIDDLEWARE_CLASSES`, top-down. Two
-hooks are available:
+in the order it's defined in :setting:`MIDDLEWARE`, top-down. Two hooks are
+available:
 
 * :meth:`process_request`
 * :meth:`process_view`
 
 During the response phase, after calling the view, middleware are applied in
 reverse order, from the bottom up. Three hooks are available:
+
+XXXX REVISE XXXX
 
 * :meth:`process_exception` (only if the view raised an exception)
 * :meth:`process_template_response` (only for template responses)

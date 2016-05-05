@@ -4,7 +4,7 @@ URL. The canonical way to enable cache middleware is to set
 ``UpdateCacheMiddleware`` as your first piece of middleware, and
 ``FetchFromCacheMiddleware`` as the last::
 
-    MIDDLEWARE_CLASSES = [
+    MIDDLEWARE = [
         'django.middleware.cache.UpdateCacheMiddleware',
         ...
         'django.middleware.cache.FetchFromCacheMiddleware'
@@ -58,14 +58,15 @@ class UpdateCacheMiddleware(MiddlewareMixin):
     cacheable.
 
     Must be used as part of the two-part update/fetch cache middleware.
-    UpdateCacheMiddleware must be the first piece of middleware in
-    MIDDLEWARE_CLASSES so that it'll get called last during the response phase.
+    UpdateCacheMiddleware must be the first piece of middleware in MIDDLEWARE
+    so that it'll get called last during the response phase.
     """
-    def __init__(self):
+    def __init__(self, get_response=None):
         self.cache_timeout = settings.CACHE_MIDDLEWARE_SECONDS
         self.key_prefix = settings.CACHE_MIDDLEWARE_KEY_PREFIX
         self.cache_alias = settings.CACHE_MIDDLEWARE_ALIAS
         self.cache = caches[self.cache_alias]
+        super(UpdateCacheMiddleware, self).__init__(get_response)
 
     def _should_update_cache(self, request, response):
         return hasattr(request, '_cache_update_cache') and request._cache_update_cache
@@ -110,13 +111,14 @@ class FetchFromCacheMiddleware(MiddlewareMixin):
     Request-phase cache middleware that fetches a page from the cache.
 
     Must be used as part of the two-part update/fetch cache middleware.
-    FetchFromCacheMiddleware must be the last piece of middleware in
-    MIDDLEWARE_CLASSES so that it'll get called last during the request phase.
+    FetchFromCacheMiddleware must be the last piece of middleware in MIDDLEWARE
+    so that it'll get called last during the request phase.
     """
-    def __init__(self):
+    def __init__(self, get_response=None):
         self.key_prefix = settings.CACHE_MIDDLEWARE_KEY_PREFIX
         self.cache_alias = settings.CACHE_MIDDLEWARE_ALIAS
         self.cache = caches[self.cache_alias]
+        super(FetchFromCacheMiddleware, self).__init__(get_response)
 
     def process_request(self, request):
         """

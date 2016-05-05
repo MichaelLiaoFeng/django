@@ -124,7 +124,6 @@ class BaseHandler(object):
                     self._response_middleware.insert(0, mw_instance.process_response)
                 if hasattr(mw_instance, 'process_exception'):
                     self._exception_middleware.insert(0, mw_instance.process_exception)
-
         else:
             handler = self._get_response
             for middleware_path in reversed(settings.MIDDLEWARE):

@@ -11,9 +11,7 @@ class CSPMiddleware(object):
         return response
 
 
-@modify_settings(
-    MIDDLEWARE_CLASSES={'append': 'django.contrib.admin.tests.CSPMiddleware'},
-)
+@modify_settings(MIDDLEWARE={'append': 'django.contrib.admin.tests.CSPMiddleware'})
 class AdminSeleniumTestCase(SeleniumTestCase, StaticLiveServerTestCase):
 
     available_apps = [

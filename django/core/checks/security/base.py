@@ -102,11 +102,13 @@ W020 = Warning(
 
 
 def _security_middleware():
-    return "django.middleware.security.SecurityMiddleware" in settings.MIDDLEWARE_CLASSES
+    return ("django.middleware.security.SecurityMiddleware" in settings.MIDDLEWARE_CLASSES or
+            "django.middleware.security.SecurityMiddleware" in settings.MIDDLEWARE)
 
 
 def _xframe_middleware():
-    return "django.middleware.clickjacking.XFrameOptionsMiddleware" in settings.MIDDLEWARE_CLASSES
+    return ("django.middleware.clickjacking.XFrameOptionsMiddleware" in settings.MIDDLEWARE_CLASSES or
+            "django.middleware.clickjacking.XFrameOptionsMiddleware" in settings.MIDDLEWARE)
 
 
 @register(Tags.security, deploy=True)

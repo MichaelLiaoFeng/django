@@ -15,7 +15,7 @@ class CsrfViewTests(SimpleTestCase):
 
     @override_settings(
         USE_I18N=True,
-        MIDDLEWARE_CLASSES=[
+        MIDDLEWARE=[
             'django.middleware.locale.LocaleMiddleware',
             'django.middleware.common.CommonMiddleware',
             'django.middleware.csrf.CsrfViewMiddleware',

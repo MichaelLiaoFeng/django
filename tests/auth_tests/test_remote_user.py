@@ -23,7 +23,7 @@ class RemoteUserTest(TestCase):
     def setUp(self):
         self.patched_settings = modify_settings(
             AUTHENTICATION_BACKENDS={'append': self.backend},
-            MIDDLEWARE_CLASSES={'append': self.middleware},
+            MIDDLEWARE={'append': self.middleware},
         )
         self.patched_settings.enable()
 

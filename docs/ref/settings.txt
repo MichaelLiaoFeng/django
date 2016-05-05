@@ -1801,6 +1801,17 @@ Example: ``"http://media.example.com/"``
     :setting:`MEDIA_URL` and :setting:`STATIC_URL` must have different
     values. See :setting:`MEDIA_ROOT` for more details.
 
+.. setting:: MIDDLEWARE
+
+``MIDDLEWARE``
+--------------
+
+.. versionadded:: 1.10
+
+Default:: ``None``
+
+A list of middleware to use. See :doc:`/topics/http/middleware`.
+
 .. setting:: MIDDLEWARE_CLASSES
 
 ``MIDDLEWARE_CLASSES``
@@ -3268,6 +3279,7 @@ HTTP
 * :setting:`DISALLOWED_USER_AGENTS`
 * :setting:`FORCE_SCRIPT_NAME`
 * :setting:`INTERNAL_IPS`
+* :setting:`MIDDLEWARE`
 * :setting:`MIDDLEWARE_CLASSES`
 * Security
 

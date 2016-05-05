@@ -8,7 +8,7 @@ from django.test import TestCase, modify_settings, override_settings
 from django.utils import six
 
 
-@modify_settings(MIDDLEWARE_CLASSES={'append': 'django.contrib.redirects.middleware.RedirectFallbackMiddleware'})
+@modify_settings(MIDDLEWARE={'append': 'django.contrib.redirects.middleware.RedirectFallbackMiddleware'})
 @override_settings(APPEND_SLASH=False, SITE_ID=1)
 class RedirectTests(TestCase):
 
@@ -54,7 +54,7 @@ class OverriddenRedirectFallbackMiddleware(RedirectFallbackMiddleware):
     response_redirect_class = http.HttpResponseRedirect
 
 
-@modify_settings(MIDDLEWARE_CLASSES={'append': 'redirects_tests.tests.OverriddenRedirectFallbackMiddleware'})
+@modify_settings(MIDDLEWARE={'append': 'redirects_tests.tests.OverriddenRedirectFallbackMiddleware'})
 @override_settings(SITE_ID=1)
 class OverriddenRedirectMiddlewareTests(TestCase):
 

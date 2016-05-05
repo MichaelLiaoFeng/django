@@ -29,7 +29,8 @@ W017 = Warning(
 
 
 def _csrf_middleware():
-    return "django.middleware.csrf.CsrfViewMiddleware" in settings.MIDDLEWARE_CLASSES
+    return ("django.middleware.csrf.CsrfViewMiddleware" in settings.MIDDLEWARE_CLASSES or
+            "django.middleware.csrf.CsrfViewMiddleware" in settings.MIDDLEWARE)
 
 
 @register(Tags.security, deploy=True)
