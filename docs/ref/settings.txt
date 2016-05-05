@@ -77,7 +77,7 @@ can be used as a subdomain wildcard: ``'.example.com'`` will match
 ``example.com``. A value of ``'*'`` will match anything; in this case you are
 responsible to provide your own validation of the ``Host`` header (perhaps in a
 middleware; if so this middleware must be listed first in
-:setting:`MIDDLEWARE_CLASSES`).
+:setting:`MIDDLEWARE`).
 
 Django also allows the `fully qualified domain name (FQDN)`_ of any entries.
 Some browsers include a trailing dot in the ``Host`` header which Django

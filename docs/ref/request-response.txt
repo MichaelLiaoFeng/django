@@ -210,7 +210,7 @@ Attributes set by middleware
 
 Some of the middleware included in Django's contrib apps set attributes on the
 request. If you don't see the attribute on a request, be sure the appropriate
-middleware class is listed in :setting:`MIDDLEWARE_CLASSES`.
+middleware class is listed in :setting:`MIDDLEWARE`.
 
 .. attribute:: HttpRequest.session
 
@@ -257,7 +257,9 @@ Methods
         behind multiple proxies. One solution is to use middleware to rewrite
         the proxy headers, as in the following example::
 
-            class MultipleProxyMiddleware(object):
+            from django.core.handlers.middleware import MiddlewareMixin
+
+            class MultipleProxyMiddleware(MiddlewareMixin):
                 FORWARDED_FOR_FIELDS = [
                     'HTTP_X_FORWARDED_FOR',
                     'HTTP_X_FORWARDED_HOST',
