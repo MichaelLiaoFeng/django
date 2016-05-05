@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.checks.security import base, csrf, sessions
+from django.core.checks.utils import patch_middleware_message
 from django.test import SimpleTestCase
 from django.test.utils import override_settings
 
@@ -23,6 +24,14 @@ class CheckSessionCookieSecureTest(SimpleTestCase):
 
     @override_settings(
         SESSION_COOKIE_SECURE=False,
+        INSTALLED_APPS=["django.contrib.sessions"],
+        MIDDLEWARE=None,
+        MIDDLEWARE_CLASSES=[])
+    def test_session_cookie_secure_with_installed_app_middleware_classes(self):
+        self.assertEqual(self.func(None), [sessions.W010])
+
+    @override_settings(
+        SESSION_COOKIE_SECURE=False,
         INSTALLED_APPS=[],
         MIDDLEWARE=["django.contrib.sessions.middleware.SessionMiddleware"])
     def test_session_cookie_secure_with_middleware(self):
@@ -35,6 +44,14 @@ class CheckSessionCookieSecureTest(SimpleTestCase):
 
     @override_settings(
         SESSION_COOKIE_SECURE=False,
+        INSTALLED_APPS=[],
+        MIDDLEWARE=None,
+        MIDDLEWARE_CLASSES=["django.contrib.sessions.middleware.SessionMiddleware"])
+    def test_session_cookie_secure_with_middleware_middleware_classes(self):
+        self.assertEqual(self.func(None), [patch_middleware_message(sessions.W011)])
+
+    @override_settings(
+        SESSION_COOKIE_SECURE=False,
         INSTALLED_APPS=["django.contrib.sessions"],
         MIDDLEWARE=["django.contrib.sessions.middleware.SessionMiddleware"])
     def test_session_cookie_secure_both(self):
@@ -42,6 +59,14 @@ class CheckSessionCookieSecureTest(SimpleTestCase):
         If SESSION_COOKIE_SECURE is off and we find both the session app and
         the middleware, provide one common warning.
         """
+        self.assertEqual(self.func(None), [sessions.W012])
+
+    @override_settings(
+        SESSION_COOKIE_SECURE=False,
+        INSTALLED_APPS=["django.contrib.sessions"],
+        MIDDLEWARE=None,
+        MIDDLEWARE_CLASSES=["django.contrib.sessions.middleware.SessionMiddleware"])
+    def test_session_cookie_secure_both_middleware_classes(self):
         self.assertEqual(self.func(None), [sessions.W012])
 
     @override_settings(

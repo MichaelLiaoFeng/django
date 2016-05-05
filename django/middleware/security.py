@@ -14,7 +14,7 @@ class SecurityMiddleware(MiddlewareMixin):
         self.redirect = settings.SECURE_SSL_REDIRECT
         self.redirect_host = settings.SECURE_SSL_HOST
         self.redirect_exempt = [re.compile(r) for r in settings.SECURE_REDIRECT_EXEMPT]
-        super(SecurityMiddleware, self).__init__(get_response)
+        self.get_response = get_response
 
     def process_request(self, request):
         path = request.path.lstrip("/")

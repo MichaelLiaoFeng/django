@@ -39,6 +39,32 @@ class CsrfViewTests(SimpleTestCase):
                                 status_code=403)
 
     @override_settings(
+        USE_I18N=True,
+        MIDDLEWARE=None,
+        MIDDLEWARE_CLASSES=[
+            'django.middleware.locale.LocaleMiddleware',
+            'django.middleware.common.CommonMiddleware',
+            'django.middleware.csrf.CsrfViewMiddleware',
+        ],
+    )
+    def test_translation_middleware_classes(self):
+        """
+        Test that an invalid request is rejected with a localized error message.
+        """
+        response = self.client.post('/')
+        self.assertContains(response, "Forbidden", status_code=403)
+        self.assertContains(response,
+                            "CSRF verification failed. Request aborted.",
+                            status_code=403)
+
+        with self.settings(LANGUAGE_CODE='nl'), override('en-us'):
+            response = self.client.post('/')
+            self.assertContains(response, "Verboden", status_code=403)
+            self.assertContains(response,
+                                "CSRF-verificatie mislukt. Verzoek afgebroken.",
+                                status_code=403)
+
+    @override_settings(
         SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')
     )
     def test_no_referer(self):

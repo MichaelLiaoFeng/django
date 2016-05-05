@@ -359,3 +359,33 @@ class CacheMiddlewareTest(SimpleTestCase):
         self.assertEqual(response2.status_code, 200)
 
         self.assertNotEqual(response.content, response2.content)
+
+
+@override_settings(
+    MIDDLEWARE=None,
+    MIDDLEWARE_CLASSES=[
+        'django.middleware.cache.FetchFromCacheMiddleware',
+        'django.middleware.cache.UpdateCacheMiddleware',
+    ],
+    CACHE_MIDDLEWARE_SECONDS=2.0,
+    ROOT_URLCONF='template_tests.alternate_urls'
+)
+class CacheMiddlewareClassesTest(SimpleTestCase):
+    def test_middleware_caching(self):
+        response = self.client.get('/template_response_view/')
+        self.assertEqual(response.status_code, 200)
+
+        time.sleep(1.0)
+
+        response2 = self.client.get('/template_response_view/')
+        self.assertEqual(response2.status_code, 200)
+
+        self.assertEqual(response.content, response2.content)
+
+        time.sleep(2.0)
+
+        # Let the cache expire and test again
+        response2 = self.client.get('/template_response_view/')
+        self.assertEqual(response2.status_code, 200)
+
+        self.assertNotEqual(response.content, response2.content)

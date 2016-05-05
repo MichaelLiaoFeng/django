@@ -42,6 +42,18 @@ class RedirectTests(TestCase):
         response = self.client.get('/initial')
         self.assertEqual(response.status_code, 410)
 
+    @override_settings(MIDDLEWARE=None)
+    @modify_settings(MIDDLEWARE_CLASSES={'append': 'django.contrib.redirects.middleware.RedirectFallbackMiddleware'})
+    def test_redirect_middleware_classes(self):
+        self.test_redirect()
+
+    @override_settings(MIDDLEWARE=None)
+    @modify_settings(MIDDLEWARE_CLASSES={'append': 'django.contrib.redirects.middleware.RedirectFallbackMiddleware'})
+    def test_more_redirects_middleware_classes(self):
+        self.test_redirect_with_append_slash()
+        self.test_redirect_with_append_slash_and_query_string()
+        self.test_response_gone()
+
     @modify_settings(INSTALLED_APPS={'remove': 'django.contrib.sites'})
     def test_sites_not_installed(self):
         with self.assertRaises(ImproperlyConfigured):

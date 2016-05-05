@@ -76,12 +76,22 @@ class AuthContextProcessorTests(TestCase):
         response = self.client.get('/auth_processor_no_attr_access/')
         self.assertContains(response, "Session not accessed")
 
+    @override_settings(MIDDLEWARE_CLASSES=AUTH_MIDDLEWARE, MIDDLEWARE=None)
+    def test_session_not_accessed_middleware_classes(self):
+        response = self.client.get('/auth_processor_no_attr_access/')
+        self.assertContains(response, "Session not accessed")
+
     @override_settings(MIDDLEWARE=AUTH_MIDDLEWARE)
     def test_session_is_accessed(self):
         """
         Tests that the session is accessed if the auth context processor
         is used and relevant attributes accessed.
         """
+        response = self.client.get('/auth_processor_attr_access/')
+        self.assertContains(response, "Session accessed")
+
+    @override_settings(MIDDLEWARE_CLASSES=AUTH_MIDDLEWARE, MIDDLEWARE=None)
+    def test_session_is_accessed_middleware_classes(self):
         response = self.client.get('/auth_processor_attr_access/')
         self.assertContains(response, "Session accessed")
 

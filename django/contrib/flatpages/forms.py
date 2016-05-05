@@ -30,7 +30,7 @@ class FlatpageForm(forms.ModelForm):
                 code='missing_leading_slash',
             )
         if (settings.APPEND_SLASH and (
-                'django.middleware.common.CommonMiddleware' in settings.MIDDLEWARE or
+                (settings.MIDDLEWARE and 'django.middleware.common.CommonMiddleware' in settings.MIDDLEWARE) or
                 'django.middleware.common.CommonMiddleware' in settings.MIDDLEWARE_CLASSES) and
                 not url.endswith('/')):
             raise forms.ValidationError(

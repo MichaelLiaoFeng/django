@@ -151,6 +151,21 @@ class RemoteUserTest(TestCase):
         self.assertTrue(response.context['user'].is_anonymous)
 
 
+@override_settings(MIDDLEWARE=None)
+class RemoteUserTestMiddlewareClasses(RemoteUserTest):
+
+    def setUp(self):
+        self.patched_settings = modify_settings(
+            AUTHENTICATION_BACKENDS={'append': self.backend},
+            MIDDLEWARE_CLASSES={'append': [
+                'django.contrib.sessions.middleware.SessionMiddleware',
+                'django.contrib.auth.middleware.AuthenticationMiddleware',
+                self.middleware,
+            ]},
+        )
+        self.patched_settings.enable()
+
+
 class RemoteUserNoCreateBackend(RemoteUserBackend):
     """Backend that doesn't create unknown users."""
     create_unknown_user = False
